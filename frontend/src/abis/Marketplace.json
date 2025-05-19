@@ -1,0 +1,51 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "_feePercent", "type": "uint256" },
+        { "internalType": "address", "name": "etherPriceFeed", "type": "address" }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        { "indexed": false, "internalType": "uint256", "name": "itemId", "type": "uint256" },
+        { "indexed": true,  "internalType": "address", "name": "nft", "type": "address" },
+        { "indexed": false, "internalType": "uint256", "name": "tokenId", "type": "uint256" },
+        { "indexed": false, "internalType": "uint256", "name": "price", "type": "uint256" },
+        { "indexed": true,  "internalType": "address", "name": "seller", "type": "address" },
+        { "indexed": false, "internalType": "address", "name": "paymentToken", "type": "address" }
+      ],
+      "name": "Offered",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        { "internalType": "address", "name": "_nft", "type": "address" },
+        { "internalType": "uint256", "name": "_tokenId", "type": "uint256" },
+        { "internalType": "uint256", "name": "_price", "type": "uint256" },
+        { "internalType": "address", "name": "_paymentToken", "type": "address" }
+      ],
+      "name": "makeItem",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [{ "internalType": "uint256", "name": "_itemId", "type": "uint256" }],
+      "name": "getTotalPrice",
+      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [{ "internalType": "uint256", "name": "_itemId", "type": "uint256" }],
+      "name": "purchaseItem",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    }
+  ]
+}

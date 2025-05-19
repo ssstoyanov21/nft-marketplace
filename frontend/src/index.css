@@ -1,0 +1,19 @@
+/* index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Универсален бутон */
+.btn {
+  @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded;
+}
+
+/* Малък spinner */
+.spinner {
+  @apply animate-spin h-5 w-5 border-4 border-t-4 border-gray-300 rounded-full;
+}
+
+/* Toast (долу-дясно) */
+.toast {
+  @apply fixed bottom-5 right-5 bg-green-100 text-green-800 px-4 py-2 rounded-lg shadow-lg;
+}
