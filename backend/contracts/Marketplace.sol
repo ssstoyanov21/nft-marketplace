@@ -61,7 +61,7 @@ contract Marketplace is ReentrancyGuard {
         address indexed seller
     );
 
-    constructor(uint _feePercent,address etherPriceFeed) {
+    constructor(uint _feePercent, address etherPriceFeed) {
         feeAccount = payable(msg.sender);
         feePercent = _feePercent;
         ethUsdPriceFeed = AggregatorV3Interface(etherPriceFeed); // ETH/USD price feed
@@ -69,16 +69,18 @@ contract Marketplace is ReentrancyGuard {
     
     function setPriceFeed(address token, address feed) external {
         priceFeeds[token] = feed;
+        // feeed = 0x4ffC43a60e009B551865A93d232E33Fce9f01507
+        // token is WSOL = 0xD31a59c85aE9D8edEFeC411D448f90841571b89c 
     }
 
     function getTokenPriceUsd(address token) public view returns (uint256) {
-        address feed = priceFeeds[token];
-        require(feed != address(0), "No Chainlink feed for token");
+        address feed = priceFeeds[token];  // USDC feed
+        require(feed != address(0), "No Chainlink feed for token"); // X
 
-        AggregatorV3Interface priceFeed = AggregatorV3Interface(feed);
-        (, int256 price, , , ) = priceFeed.latestRoundData();
+        AggregatorV3Interface priceFeed = AggregatorV3Interface(feed);  // USDC / ETH ??? USDC / USD ?? 
+        (, int256 price, , , ) = priceFeed.latestRoundData();  // 1 
 
-        return uint256(price); // price with 8 decimals
+        return uint256(price); // price with 8 decimals  // 1
     }
 
     function getEthPriceUsd() public view returns (uint256) {
@@ -92,10 +94,11 @@ contract Marketplace is ReentrancyGuard {
         uint _price,
         address _paymentToken
     ) external nonReentrant {
-        require(_price > 0, "Price must be greater than zero");
-        require(priceFeeds[_paymentToken] != address(0), "Unsupported token");
+        require(_paymentToken != address(0), "Payment token must be Ethereum ");
+        require(_price > 0, "Price must be greater than zero"); //X
+        require(priceFeeds[_paymentToken] != address(0), "Unsupported token");  // x 
 
-        uint256 priceInUsd = (_price * getTokenPriceUsd(_paymentToken)) / 1e18;
+        uint256 priceInUsd = (_price * getTokenPriceUsd(_paymentToken)) / 1e18;  // 1000 * 
         require(priceInUsd >= 10 * 1e8, "Price must be >= $10");
 
         itemCount++;
@@ -109,7 +112,6 @@ contract Marketplace is ReentrancyGuard {
             false,
             _paymentToken
         );
-
         emit Offered(itemCount, address(_nft), _tokenId, _price, msg.sender, _paymentToken);
     }
 
@@ -131,7 +133,7 @@ contract Marketplace is ReentrancyGuard {
 
     function getTotalPrice(uint _itemId) view public returns(uint){
         return((items[_itemId].price * (100 + feePercent)) / 100);
-    }
+    } // ***
 
     function delistItem(uint _itemId) external nonReentrant {
         Item storage item = items[_itemId];
@@ -144,4 +146,6 @@ contract Marketplace is ReentrancyGuard {
 
         emit Delisted(_itemId, address(item.nft), item.tokenId, msg.sender);
     }
+
+     // **
 }

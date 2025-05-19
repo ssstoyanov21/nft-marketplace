@@ -1,37 +1,48 @@
 import React, { useState, useEffect } from "react";
-import Navbar        from "./components/Navbar.jsx";
+import Navbar from "./components/Navbar.jsx";
 import WalletConnector from "./components/WalletConnector.jsx";
-import NFTModal      from "./components/NFTModal.jsx";
+import NFTModal from "./components/NFTModal.jsx";
 import { getProvider, getNFTContract, getMarketContract } from "./utils/contracts";
-import { ethers }    from "ethers";
-
+import { ethers } from "ethers";
+import MarketArtifact from "./abis/Marketplace.json";
+console.log("🧩 MarketArtifact.abi (перво):", MarketArtifact.abi);
 
 export default function App() {
-  // 1) Wallet + контракти
-  const [signer, setSigner]   = useState(null);
-  const [address, setAddress] = useState(null);
+  console.log("ENV NFT:", import.meta.env.VITE_NFT_CONTRACT_ADDRESS);
+  console.log("ENV MKT:", import.meta.env.VITE_MARKETPLACE_CONTRACT_ADDRESS);
+
   const provider = getProvider();
-  const nft      = getNFTContract(signer || provider);
-  const market   = getMarketContract(signer || provider);
+  const nft = getNFTContract(provider);
+  const market = getMarketContract(provider);
+
+  console.log("▶️ NFT contract address:", nft.address);
+  console.log("▶️ Market contract address:", market.address);
+  console.log("▶️ Market has itemCount fn:", !!market.interface.functions.itemCount);
+
+
+  // 1) Wallet + контракти
+  const [signer, setSigner] = useState(null);
+  const [address, setAddress] = useState(null);
+
 
   // 3) List / Buy
   const [tokenId, setTokenId] = useState("");
-  const [price, setPrice]     = useState("");
+  const [price, setPrice] = useState("");
 
   // 4) Chainlink feeds
-  const [feedToken, setFeedToken]     = useState("");
+  const [feedToken, setFeedToken] = useState("");
   const [feedAddress, setFeedAddress] = useState("");
   const [ethUsdPrice, setEthUsdPrice] = useState(null);
   const [tokenUsdPrice, setTokenUsdPrice] = useState(null);
 
   // 5) Items + Gallery state
-  const [items, setItems]     = useState([]);
-  const [filter, setFilter]   = useState("All");
-  const [modalOpen, setModalOpen]  = useState(false);
+  const [items, setItems] = useState([]);
+  const [filter, setFilter] = useState("All");
+  const [modalOpen, setModalOpen] = useState(false);
   const [activeItem, setActiveItem] = useState(null);
 
   // 6) Status (spinner / toast)
-  const [status, setStatus]   = useState("");
+  const [status, setStatus] = useState("");
 
   // --- HANDLERS ---
 
@@ -105,35 +116,6 @@ export default function App() {
     }
   }
 
-  // Load all items + fetch metadata.image
-  async function reloadItems() {
-    try {
-      const countBN = await market.itemCount();             // <<-- бележка: това е функция!
-      const count   = countBN.toNumber();
-      const loaded  = [];
-      for (let i = 1; i <= count; i++) {
-        const it = await market.items(i);
-        let image = null;
-        try {
-          const uri  = await nft.tokenURI(it.tokenId);
-          const res  = await fetch(uri);
-          const meta = await res.json();
-          image = meta.image;
-        } catch {}
-        loaded.push({
-          itemId: it.itemId.toNumber(),
-          tokenId: it.tokenId.toNumber(),
-          price: ethers.utils.formatEther(it.price),
-          seller: it.seller,
-          sold: it.sold,
-          image
-        });
-      }
-      setItems(loaded);
-    } catch (err) {
-      console.error("reloadItems error", err);
-    }
-  }
 
   // Modal helpers
   function openModal(item) {
@@ -151,12 +133,45 @@ export default function App() {
 
   // при connect или status промяна → презареждаме
   useEffect(() => {
-    if (signer) reloadItems();
+    if (signer) {
+      reloadItems();
+    }
   }, [signer, status]);
 
-  // --- RENDER ---
+  async function reloadItems() {
+    try {
+      const countBN = await market.itemCount();
+      const count = countBN.toNumber();
+      const loaded = [];
+      for (let i = 1; i <= count; i++) {
+        const it = await market.items(i);
+        const totalBN = await market.getTotalPrice(it.itemId);
+        const total = ethers.utils.formatEther(totalBN);
+        let image = null;
+        try {
+          const uri = await nft.tokenURI(it.tokenId);
+          const res = await fetch(uri);
+          const meta = await res.json();
+          image = meta.image;
+        } catch { }
+        loaded.push({
+          itemId: it.itemId.toNumber(),
+          tokenId: it.tokenId.toNumber(),
+          price: ethers.utils.formatEther(it.price),
+          totalPrice: total,
+          seller: it.seller,
+          sold: it.sold,
+          image
+        });
+      }
+      setItems(loaded);
+    } catch (err) {
+      console.error("reloadItems error", err);
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-white">
       <Navbar address={address} provider={provider} />
 
       <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 space-y-8">
@@ -206,47 +221,6 @@ export default function App() {
               </div>
             </section>
 
-            {/* 4) Set Price Feed */}
-            <section className="space-y-2">
-              <h2 className="text-xl font-semibold">Set Price Feed</h2>
-              <div className="flex space-x-2">
-                <input
-                  className="border p-1 flex-1"
-                  type="text"
-                  placeholder="Token Address"
-                  value={feedToken}
-                  onChange={e => setFeedToken(e.target.value)}
-                />
-                <input
-                  className="border p-1 flex-1"
-                  type="text"
-                  placeholder="Feed Address"
-                  value={feedAddress}
-                  onChange={e => setFeedAddress(e.target.value)}
-                />
-                <button onClick={handleSetFeed} className="btn">Set Feed</button>
-              </div>
-            </section>
-
-            {/* 4) View Price Feeds */}
-            <section className="space-y-2">
-              <h2 className="text-xl font-semibold">Price Feeds</h2>
-              <div className="flex space-x-2 items-center">
-                <button onClick={handleGetEthPrice} className="btn">ETH/USD</button>
-                {ethUsdPrice && <span>{ethers.utils.formatUnits(ethUsdPrice, 8)} USD</span>}
-              </div>
-              <div className="flex space-x-2 items-center">
-                <input
-                  className="border p-1 flex-1"
-                  type="text"
-                  placeholder="Token Address"
-                  value={feedToken}
-                  onChange={e => setFeedToken(e.target.value)}
-                />
-                <button onClick={handleGetTokenPrice} className="btn">Token/USD</button>
-                {tokenUsdPrice && <span>{ethers.utils.formatUnits(tokenUsdPrice, 8)} USD</span>}
-              </div>
-            </section>
 
             {/* 5) NFT Gallery + Filters */}
             <section className="space-y-4">
@@ -267,9 +241,9 @@ export default function App() {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-4">
                 {items.filter(item => {
                   if (filter === "All") return true;
-                  if (filter === "My NFTs")   return item.seller.toLowerCase() === signer._address.toLowerCase();
+                  if (filter === "My NFTs") return item.seller.toLowerCase() === signer._address.toLowerCase();
                   if (filter === "Available") return !item.sold;
-                  if (filter === "Sold")      return item.sold;
+                  if (filter === "Sold") return item.sold;
                 }).map(item => (
                   <div key={item.itemId} className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
                     {item.image && (
@@ -280,14 +254,25 @@ export default function App() {
                         Token #{item.tokenId}
                       </p>
                       <p className="text-sm text-gray-600 dark:text-gray-300">
-                        {item.price} ETH
+                        Price: {item.price} ETH
+                        <br />
+                        Total (incl. fee): {item.totalPrice} ETH
                       </p>
+
                       <button
                         onClick={() => openModal(item)}
                         className="mt-2 text-indigo-600 dark:text-indigo-400 hover:underline text-sm"
                       >
                         View Details
                       </button>
+                      {address?.toLowerCase() === item.seller.toLowerCase() && !item.sold && (
+                        <button
+                          onClick={() => handleDelist(item.itemId)}
+                          className="mt-1 btn bg-red-600 hover:bg-red-700 text-white"
+                        >
+                          Delist
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))}

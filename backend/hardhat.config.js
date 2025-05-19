@@ -13,6 +13,8 @@ module.exports = {
       // Hardhat Ethers ще ги използва по подразбиране.
     },
     // ако искаш пак да имаш Hardhat Network:
-    hardhat: {}
+    hardhat: {
+      chainId: 1337 
+    }
   }
 };

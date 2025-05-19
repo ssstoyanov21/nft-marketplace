@@ -11,7 +11,7 @@ export default function WalletConnector({ onConnect }) {
     const web3Modal = new Web3Modal({ cacheProvider: true });
     const instance  = await web3Modal.connect();
     const provider  = new ethers.providers.Web3Provider(instance);
-    const signer    = getSigner(provider);
+    const signer = getSigner(provider);
     const addr      = await signer.getAddress();
 
     setAddress(addr);

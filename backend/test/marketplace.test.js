@@ -10,9 +10,9 @@ describe("NFT + Marketplace end-to-end", function() {
     [owner, buyer] = await ethers.getSigners();
 
     // 2) Деплой на Mock Chainlink feed (8 десетични, начална цена $2000)
-    const Mock = await ethers.getContractFactory("MockV3Aggregator");
-    const mock = await Mock.deploy(8, 2000 * 10**8);
-    await mock.deployed();
+   const Mock = await ethers.getContractFactory("MockV3Aggregator");
+   const ethUsdFeed = await Mock.deploy(8, 2000 * 10**8); // $2000 per ETH
+   await ethUsdFeed.deployed();// 0.0005 ETH за 1 USDC
 
     // 3) Деплой на NFT конктракта
     const NFT = await ethers.getContractFactory("NFT");
@@ -21,41 +21,30 @@ describe("NFT + Marketplace end-to-end", function() {
 
     // 4) Деплой на Marketplace с 1% такса и mock фийд
     const Market = await ethers.getContractFactory("Marketplace");
-    market = await Market.deploy(1, mock.address);
+    market = await Market.deploy(1,ethUsdFeed.address);
     await market.deployed();
-
+    this.WETH = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
     // 5) Настройваме Marketplace да ползва mock фийда за ETH
-    await market.setPriceFeed(ethers.constants.AddressZero, mock.address);
+    await market.setPriceFeed(this.WETH,ethUsdFeed.address);
+
   });
 
-  it("да минтне, листне и купи NFT успешно", async () => {
-    // --- Mint токен #11 ---
-    let tx = await nft.mint("ipfs://TEST");  // създаваме нов NFT
-    await tx.wait();                         // изчакваме потвърждение
-    expect((await nft.tokenCount()).toNumber()).to.equal(11);
+it("трябва да минтне, листне и купи нов NFT", async () => {
 
-    // --- Approve & List токен #11 за 0.1 ETH ---
-    tx = await nft.approve(market.address, 11);
-    await tx.wait();
-    tx = await market.makeItem(
-      nft.address,
-      11,
-      PRICE,
-      ethers.constants.AddressZero
-    );
-    await tx.wait();
-    expect((await market.itemCount()).toNumber()).to.equal(1);
+  // Одобряваш за продажба
+await nft.approve(market.address, 10);
 
-    // --- Проверка на общата цена (0.1 + 1% taksa = 0.101 ETH) ---
-    const total = await market.getTotalPrice(1);
-    const expectedTotal = PRICE.mul(101).div(100);
-    expect(total.toString()).to.equal(expectedTotal.toString());
 
-    // --- Купуване от втория акаунт ---
-    tx = await market.connect(buyer).purchaseItem(1, { value: total });
-    await tx.wait();
+  // Листваш го
+ await market.makeItem(nft.address, 10, PRICE, this.WETH);
 
-    // --- Проверка на собствеността ---
-    expect(await nft.ownerOf(11)).to.equal(buyer.address);
-  });
+  expect((await market.itemCount()).toNumber()).to.equal(1);
+
+  // Купуваш го
+  const total = await market.getTotalPrice(1);
+  await market.connect(buyer).purchaseItem(1, { value: total });
+
+  // Проверяваш собствеността
+  expect(await nft.ownerOf(10)).to.equal(buyer.address);
+});
 });

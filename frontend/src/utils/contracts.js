@@ -1,43 +1,48 @@
-import { ethers } from 'ethers';
-import NFTABI from '../abis/NFT.json';
-import MarketABI from '../abis/Marketplace.json';
+import { ethers } from 'ethers'
+import NFTArtifact    from '../abis/NFT.json'
+import MarketArtifact from '../abis/Marketplace.json'
+console.log('📦 [contracts.js] MarketArtifact.abi =', MarketArtifact.abi);
 
-/**
- * Returns a JsonRpcProvider to the local Ganache network
- */
+const NFTABI    = NFTArtifact.abi
+const MarketABI = MarketArtifact.abi
+
 export function getProvider() {
-  return new ethers.providers.JsonRpcProvider('http://127.0.0.1:8545');
-}
-
-/**
- * Returns a Web3Provider signer using window.ethereum (MetaMask)
- */
-export function getSigner() {
-  if (typeof window !== 'undefined' && window.ethereum) {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    return provider.getSigner();
+  if (import.meta.env.VITE_RPC_URL) {
+    return new ethers.providers.JsonRpcProvider(import.meta.env.VITE_RPC_URL)
   }
-  throw new Error('No Ethereum provider found');
+  if (window.ethereum) {
+    return new ethers.providers.Web3Provider(window.ethereum)
+  }
+  throw new Error('No provider available')
 }
 
-/**
- * Returns an instance of the NFT contract (ERC721) at the configured address
- */
+export function getSigner(provider) {
+  return provider.getSigner()
+}
+
 export function getNFTContract(signerOrProvider) {
-  return new ethers.Contract(
-    import.meta.env.VITE_NFT_CONTRACT_ADDRESS,
-    NFTABI,
-    signerOrProvider
-  );
+  const address = import.meta.env.VITE_NFT_CONTRACT_ADDRESS
+  if (!address) {
+    throw new Error('Missing VITE_NFT_CONTRACT_ADDRESS in env')
+  }
+  return new ethers.Contract(address, NFTABI, signerOrProvider)
 }
 
-/**
- * Returns an instance of the Marketplace contract at the configured address
- */
 export function getMarketContract(signerOrProvider) {
-  return new ethers.Contract(
-    import.meta.env.VITE_MARKETPLACE_CONTRACT_ADDRESS,
-    MarketABI,
-    signerOrProvider
-  );
+  const address = import.meta.env.VITE_MARKETPLACE_CONTRACT_ADDRESS
+  if (!address) {
+    throw new Error('Missing VITE_MARKETPLACE_CONTRACT_ADDRESS in env')
+  }
+  return new ethers.Contract(address, MarketABI, signerOrProvider)
+}
+
+export async function getTotalPrice(marketContract, itemId) {
+  const total = await marketContract.getTotalPrice(itemId);
+  return total;
+}
+
+export async function delistItem(marketContract, itemId) {
+  const tx = await marketContract.delistItem(itemId);
+  await tx.wait();
+  return true;
 }
