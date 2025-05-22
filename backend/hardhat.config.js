@@ -1,20 +1,15 @@
 require("@nomiclabs/hardhat-ethers");
-require("dotenv").config();
+require("dotenv").config({ path: "../.env" });
 
 module.exports = {
-  solidity: "0.8.4",
+  solidity: "0.8.24",
   networks: {
-    localhost: {
-      // Ganache слуша на 8545 по подразбиране
-      url: process.env.GANACHE_URL || "http://127.0.0.1:8545",
-      // Ganache детерминистичен порт и chainId 1337
-      chainId: 1337,
-      // Ganache вече си зарежда 10 мнемонични акаунта автоматично,
-      // Hardhat Ethers ще ги използва по подразбиране.
-    },
-    // ако искаш пак да имаш Hardhat Network:
     hardhat: {
-      chainId: 1337 
-    }
-  }
+      chainId: 1,
+      forking: {
+        url: `https://mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
+        // blockNumber: 17820000, // по желание фиксиран блок
+      },
+    },
+  },
 };
