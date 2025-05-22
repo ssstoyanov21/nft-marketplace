@@ -12,11 +12,6 @@ async function main() {
   await mock.deployed();
   console.log("MockFeed:", mock.address);
 
-  // 2) Deploy NFT
-  const NFT    = await ethers.getContractFactory("NFT");
-  const nft    = await NFT.deploy();
-  await nft.deployed();
-  console.log("NFT:", nft.address);
 
   // 3) Deploy Marketplace
   const Market = await ethers.getContractFactory("Marketplace");
@@ -25,7 +20,7 @@ async function main() {
   console.log("Marketplace:", market.address);
 
   // 4) Configure the price feed for ETH (addressZero)
-  await market.setPriceFeed(ethers.constants.AddressZero, mock.address);
+  await market.setPriceFeed("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", mock.address);
   console.log("ETH price feed set on Marketplace");
 }
 

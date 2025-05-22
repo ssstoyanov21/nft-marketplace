@@ -1,10 +1,12 @@
 import { ethers } from 'ethers'
 import NFTArtifact    from '../abis/NFT.json'
 import MarketArtifact from '../abis/Marketplace.json'
-console.log('📦 [contracts.js] MarketArtifact.abi =', MarketArtifact.abi);
 
 const NFTABI    = NFTArtifact.abi
 const MarketABI = MarketArtifact.abi
+
+console.log('📦 [contracts.js] MarketArtifact.abi =', MarketArtifact.abi);
+console.log("📦 NFTABI:", NFTABI);
 
 export function getProvider() {
   if (import.meta.env.VITE_RPC_URL) {

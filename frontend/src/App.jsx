@@ -1,29 +1,23 @@
 import React, { useState, useEffect } from "react";
+import "./index.css";
 import Navbar from "./components/Navbar.jsx";
 import WalletConnector from "./components/WalletConnector.jsx";
 import NFTModal from "./components/NFTModal.jsx";
 import { getProvider, getNFTContract, getMarketContract } from "./utils/contracts";
 import { ethers } from "ethers";
 import MarketArtifact from "./abis/Marketplace.json";
-console.log("🧩 MarketArtifact.abi (перво):", MarketArtifact.abi);
+import UploadDemo from "./UploadDemo";
+
 
 export default function App() {
-  console.log("ENV NFT:", import.meta.env.VITE_NFT_CONTRACT_ADDRESS);
-  console.log("ENV MKT:", import.meta.env.VITE_MARKETPLACE_CONTRACT_ADDRESS);
 
   const provider = getProvider();
   const nft = getNFTContract(provider);
   const market = getMarketContract(provider);
 
-  console.log("▶️ NFT contract address:", nft.address);
-  console.log("▶️ Market contract address:", market.address);
-  console.log("▶️ Market has itemCount fn:", !!market.interface.functions.itemCount);
-
-
   // 1) Wallet + контракти
   const [signer, setSigner] = useState(null);
   const [address, setAddress] = useState(null);
-
 
   // 3) List / Buy
   const [tokenId, setTokenId] = useState("");
@@ -44,7 +38,6 @@ export default function App() {
   // 6) Status (spinner / toast)
   const [status, setStatus] = useState("");
 
-  // --- HANDLERS ---
 
   // List NFT
   async function handleList() {
@@ -116,7 +109,6 @@ export default function App() {
     }
   }
 
-
   // Modal helpers
   function openModal(item) {
     setActiveItem(item);
@@ -130,7 +122,6 @@ export default function App() {
     await handleBuy(itemId);
     closeModal();
   }
-
   // при connect или status промяна → презареждаме
   useEffect(() => {
     if (signer) {
@@ -181,6 +172,8 @@ export default function App() {
             setAddress(addr);
           }}
         />
+
+        <UploadDemo />
 
         {signer && (
           <>

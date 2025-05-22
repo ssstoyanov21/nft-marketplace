@@ -18,6 +18,8 @@ interface AggregatorV3Interface {
         );
 }
 
+
+
 contract Marketplace is ReentrancyGuard {
     address payable public immutable feeAccount;
     uint public immutable feePercent;
@@ -68,6 +70,8 @@ contract Marketplace is ReentrancyGuard {
     }
     
     function setPriceFeed(address token, address feed) external {
+        require(token != address(0), "Token cannot be zero address");
+        require(feed != address(0), "Feed cannot be zero address");
         priceFeeds[token] = feed;
         // feeed = 0x4ffC43a60e009B551865A93d232E33Fce9f01507
         // token is WSOL = 0xD31a59c85aE9D8edEFeC411D448f90841571b89c 
