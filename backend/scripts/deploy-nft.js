@@ -1,19 +1,19 @@
+const hre = require("hardhat");
+
 async function main() {
-  const [deployer] = await ethers.getSigners();
+  const [deployer] = await hre.ethers.getSigners();
   console.log("Account:", deployer.address);
 
-  const NFT = await ethers.getContractFactory("NFT");
-  // Примерни URIs за constructor (7 елемента)
-  const uris = Array(7).fill("https://example.com/meta.json");
-  const nft = await NFT.deploy(uris);
+  // Взимаме фабриката на контракта
+  const NFT = await hre.ethers.getContractFactory("NFT");
+  // Понеже конструкторът няма аргументи, просто извикваме без нищо
+  const nft = await NFT.deploy();
   await nft.deployed();
 
-  console.log("NFT deployed to:", nft.address);
+  console.log("✅ NFT deployed to:", nft.address);
 }
 
-main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
