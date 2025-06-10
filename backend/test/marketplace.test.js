@@ -18,6 +18,7 @@ describe("NFT + Marketplace end-to-end", function() {
     const NFT = await ethers.getContractFactory("NFT");
     nft = await NFT.deploy();
     await nft.deployed();
+    // expect(await nft.ownerOf(10)).to.equal(buyer.address);
 
     // 4) Деплой на Marketplace с 1% такса и mock фийд
     const Market = await ethers.getContractFactory("Marketplace");

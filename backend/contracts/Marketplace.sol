@@ -72,12 +72,10 @@ contract Marketplace is ReentrancyGuard {
         require(token != address(0), "Token cannot be zero address");
         require(feed != address(0), "Feed cannot be zero address");
         priceFeeds[token] = feed;
-        // feeed = 0x4ffC43a60e009B551865A93d232E33Fce9f01507
-        // token is WSOL = 0xD31a59c85aE9D8edEFeC411D448f90841571b89c 
     }
 
     function getTokenPriceUsd(address token) public view returns (uint256) {
-        address feed = priceFeeds[token];  // USDC feed
+        address feed = priceFeeds[token];  // ETH feed
         require(feed != address(0), "No Chainlink feed for token"); // X
 
         AggregatorV3Interface priceFeed = AggregatorV3Interface(feed);  // USDC / ETH ??? USDC / USD ?? 
@@ -124,7 +122,7 @@ contract Marketplace is ReentrancyGuard {
         require(!item.sold, "item already sold");
 
         uint _totalPrice = getTotalPrice(_itemId);
-        require(msg.value >= _totalPrice, "not enough ether to cover item price and market fee");
+        require(msg.value == _totalPrice, "not enough ether to cover item price and market fee");
 
         item.seller.transfer(item.price);
         feeAccount.transfer(_totalPrice - item.price);
@@ -135,6 +133,7 @@ contract Marketplace is ReentrancyGuard {
     }
 
     function getTotalPrice(uint _itemId) view public returns(uint){
+        // 0.01 incorrect fee calc
         return((items[_itemId].price * (100 + feePercent)) / 100);
     } // ***
 

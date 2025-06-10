@@ -7,15 +7,15 @@ contract NFT is ERC721URIStorage {
     uint256 public tokenCount;
     address nftOwner;
 
-    constructor(string[] memory uris) ERC721("SSH21", "S21") {
+    constructor() ERC721("SSH21", "S21") {
         nftOwner = msg.sender;
-        require(uris.length == 7);
-        for (uint256 i = 0; i < uris.length; i++) {
+        for (uint256 i = 0; i < 11; i++) {
             tokenCount++;
             _mint(msg.sender, tokenCount);
-            _setTokenURI(tokenCount, uris[i]);
         }
     }
+        // }
+    
 
     // 89e1c76e.b9ad4c14d101436ea346cdcf64056121
 
@@ -35,4 +35,4 @@ contract NFT is ERC721URIStorage {
         _setTokenURI(tokenCount, _tokenURI);
         return (tokenCount);
     }
-}
+    }
