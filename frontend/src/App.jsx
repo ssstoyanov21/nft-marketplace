@@ -30,44 +30,68 @@ export default function App() {
 
   // Load items whenever signer or status changes
   useEffect(() => {
-    if (signer) reloadItems();
-  }, [signer, status]);
+  if (signer) reloadItems();
+}, [signer, status]);
 
-  async function reloadItems() {
-    try {
-      const countBN = await market.itemCount();
-      const count = countBN.toNumber();
-      const loaded = [];
+async function reloadItems() {
+  try {
+    const count = (await market.itemCount()).toNumber();
+    const items = [];
 
-      for (let i = 1; i <= count; i++) {
-        const it = await market.items(i);
-        const totalBN = await market.getTotalPrice(it.itemId);
-        const total = ethers.utils.formatEther(totalBN);
+    for (let i = 1; i <= count; i++) {
+      const item = await market.items(i);
+      const uri = await nft.tokenURI(item.tokenId);
+      const meta = await fetch(uri).then(res => res.json());
 
-        let image = null;
-        try {
-          const uri = await nft.tokenURI(it.tokenId);
-          const res = await fetch(uri);
-          const meta = await res.json();
-          image = meta.image;
-        } catch {}
-
-        loaded.push({
-          itemId: it.itemId.toNumber(),
-          tokenId: it.tokenId.toNumber(),
-          price: ethers.utils.formatEther(it.price),
-          totalPrice: total,
-          seller: it.seller,
-          sold: it.sold,
-          image,
-        });
-      }
-
-      setItems(loaded);
-    } catch (err) {
-      console.error('Failed to load items', err);
+      items.push({
+        itemId: item.itemId.toNumber(),
+        tokenId: item.tokenId.toNumber(),
+        price: ethers.utils.formatEther(item.price),
+        seller: item.seller,
+        sold: item.sold,
+        image: meta.image,
+        name: meta.name,
+      });
     }
+    setItems(items);
+  } catch (err) {
+    console.error("Error loading items:", err);
   }
+}
+async function reloadItems() {
+  try {
+    const countBN = await market.itemCount();
+    const count = countBN.toNumber();
+    const loaded = [];
+
+    for (let i = 1; i <= count; i++) {
+      const item = await market.items(i);
+      if (item.sold) continue; // skip sold items if desired
+
+      const tokenURI = await nft.tokenURI(item.tokenId);
+      const metaRes = await fetch(tokenURI);
+      const meta = await metaRes.json();
+
+      const totalBN = await market.getTotalPrice(item.itemId);
+      const totalPrice = ethers.utils.formatEther(totalBN);
+
+      loaded.push({
+        itemId: item.itemId.toNumber(),
+        tokenId: item.tokenId.toNumber(),
+        price: ethers.utils.formatEther(item.price),
+        totalPrice,
+        seller: item.seller,
+        sold: item.sold,
+        image: meta.image, 
+        name: meta.name,
+      });
+    }
+    setItems(loaded);
+  } catch (err) {
+    console.error("Failed to load items:", err);
+  }
+}
+
 
   return (
     <Router>

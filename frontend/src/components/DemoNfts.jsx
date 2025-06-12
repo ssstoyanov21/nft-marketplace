@@ -1,50 +1,36 @@
-// src/components/DemoNfts.jsx
 import React from 'react';
 
-export default function DemoNfts({ signer, market, nft, items, filter, setFilter, openModal }) {
+export default function DemoNfts({ signer, items, filter, setFilter, openModal }) {
+  const userAddress = signer?._address?.toLowerCase();
+  
   return (
-    <section>
-      <h2 className="text-xl font-semibold">NFT Gallery</h2>
-
-      <div className="flex space-x-4 mb-4">
-        {['All', 'Available', 'My NFTs', 'Sold'].map(tab => (
+    <>
+      <div className="tabs">
+        {["All", "My NFTs", "Available", "Sold"].map(tab => (
           <button
             key={tab}
             onClick={() => setFilter(tab)}
-            className={`px-3 py-1 ${
-              filter === tab ? 'bg-indigo-600 text-white' : 'bg-gray-200'
-            } rounded`}
+            className={filter === tab ? 'active' : ''}
           >
             {tab}
           </button>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        {items
-          .filter(item => {
-            if (filter === 'All') return true;
-            if (filter === 'Available') return !item.sold;
-            if (filter === 'My NFTs') return signer && item.seller.toLowerCase() === signer._address.toLowerCase();
-            if (filter === 'Sold') return item.sold;
-          })
-          .map(item => (
-            <div key={item.itemId} className="border rounded p-4">
-              {item.image && (
-                <img src={item.image} alt={`Token #${item.tokenId}`} className="mb-2 w-full h-32 object-cover" />
-              )}
-              <p>Token #{item.tokenId}</p>
-              <p>Price: {item.price} ETH</p>
-              <p>Total: {item.totalPrice} ETH</p>
-              <button
-                onClick={() => openModal(item)}
-                className="mt-2 px-3 py-1 bg-green-500 text-white rounded"
-              >
-                View / Buy
-              </button>
-            </div>
-          ))}
+      <div className="grid">
+        {items.filter(item => {
+          if (filter === "All") return true;
+          if (filter === "My NFTs") return item.seller.toLowerCase() === userAddress;
+          if (filter === "Available") return !item.sold;
+          if (filter === "Sold") return item.sold;
+        }).map(item => (
+          <div key={item.itemId} className="nft-card">
+            <img src={item.image} alt={`NFT #${item.tokenId}`} />
+            <p>NFT #{item.tokenId}</p>
+            <button onClick={() => openModal(item)}>Details</button>
+          </div>
+        ))}
       </div>
-    </section>
+    </>
   );
 }

@@ -44,13 +44,12 @@ export function getNFTContract(signerOrProvider) {
  * Инициализира Marketplace контракт от ABI и адрес в .env:
  * VITE_MARKETPLACE_CONTRACT_ADDRESS=0x...
  */
-export function getMarketContract(signerOrProvider) {
+export function getMarketContract(provider) {
   const address = import.meta.env.VITE_MARKETPLACE_CONTRACT_ADDRESS;
-  if (!address) {
-    throw new Error('Missing VITE_MARKETPLACE_CONTRACT_ADDRESS in .env');
-  }
-  return new ethers.Contract(address, MARKET_ABI, signerOrProvider);
+  console.log('📦 Using MARKET_ADDRESS:', address);
+  return new ethers.Contract(address, MARKET_ABI, provider);
 }
+
 
 /**
  * Помощна функция за изчисляване на total price (price + fee):
