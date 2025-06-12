@@ -24,17 +24,18 @@ async function main() {
     const listTx = await market.connect(addr1).makeItem(
       nft.address,
       i,
-      ethers.utils.parseEther("21"),         // цена 21 ETH
-      ethers.constants.AddressZero          // paymentToken = ETH
+      ethers.utils.parseEther("0.5"),      // price (ETH)
+      ethers.constants.AddressZero,        // paymentToken = ETH
+      { gasLimit: 3_000_000 }              // (опционално) напълно безопасен gasLimit
     );
     await listTx.wait();
-    console.log(`🛒 Listed token ${i} at 21 ETH`);
+    console.log(`🛒 Listed token ${i} at 0.5 ETH`);
   }
 
   console.log("🎉 Done minting and listing NFTs!");
 }
 
-main().catch((error) => {
-  console.error(error);
+main().catch((e) => {
+  console.error(e);
   process.exitCode = 1;
 });

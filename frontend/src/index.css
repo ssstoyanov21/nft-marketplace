@@ -1,19 +1,16 @@
-/* index.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Универсален бутон */
-.btn {
-  @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded;
+.nft-grid {
+  @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6;
 }
-
-/* Малък spinner */
-.spinner {
-  @apply animate-spin h-5 w-5 border-4 border-t-4 border-gray-300 rounded-full;
+.nft-card {
+  @apply bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow;
 }
-
-/* Toast (долу-дясно) */
-.toast {
-  @apply fixed bottom-5 right-5 bg-green-100 text-green-800 px-4 py-2 rounded-lg shadow-lg;
+.nft-image {
+  @apply w-full h-48 object-cover;
+}
+.detail-image {
+  @apply w-full max-w-md rounded-xl shadow-2xl;
 }
