@@ -102,7 +102,7 @@ async function reloadItems() {
         <Link to="/upload" className="text-blue-600 hover:underline">Upload NFT</Link>
       </nav>
 
-      <div className="max-w-3xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg space-y-6">
+      <div className="max-w-3xl mx-auto p-6 bg-gray-100 dark:bg-gray-200 rounded-xl shadow-lg space-y-6">
         <WalletConnector
           onConnect={(sign, addr) => {
             setSigner(sign);
