@@ -2,11 +2,13 @@
 import { useState, useEffect } from 'react';
 import './index.css';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+
 import Navbar from './components/Navbar.jsx';
 import WalletConnector from './components/WalletConnector.jsx';
 import NFTModal from './components/NFTModal.jsx';
 import DemoNfts from './components/DemoNfts.jsx';
 import UploadDemo from './components/UploadDemo.jsx';
+
 import { getProvider, getNFTContract, getMarketContract } from './utils/contracts.js';
 import { ethers } from 'ethers';
 
@@ -28,78 +30,74 @@ export default function App() {
   // Status (toast / spinner)
   const [status, setStatus] = useState('');
 
-  // Load items whenever signer or status changes
+  // Reload items on signer or status change
   useEffect(() => {
-  if (signer) reloadItems();
-}, [signer, status]);
-
-async function reloadItems() {
-  try {
-    const count = (await market.itemCount()).toNumber();
-    const items = [];
-
-    for (let i = 1; i <= count; i++) {
-      const item = await market.items(i);
-      const uri = await nft.tokenURI(item.tokenId);
-      const meta = await fetch(uri).then(res => res.json());
-
-      items.push({
-        itemId: item.itemId.toNumber(),
-        tokenId: item.tokenId.toNumber(),
-        price: ethers.utils.formatEther(item.price),
-        seller: item.seller,
-        sold: item.sold,
-        image: meta.image,
-        name: meta.name,
-      });
+    if (signer) {
+      reloadItems();
     }
-    setItems(items);
-  } catch (err) {
-    console.error("Error loading items:", err);
-  }
-}
-async function reloadItems() {
-  try {
-    const countBN = await market.itemCount();
-    const count = countBN.toNumber();
-    const loaded = [];
+  }, [signer, status]);
 
-    for (let i = 1; i <= count; i++) {
-      const item = await market.items(i);
-      if (item.sold) continue; // skip sold items if desired
+  // Единственото reloadItems()
+  async function reloadItems() {
+    try {
+      console.log("🔍 reloadItems() called");
+      console.log("🔍 market.address =", market.address);
 
-      const tokenURI = await nft.tokenURI(item.tokenId);
-      const metaRes = await fetch(tokenURI);
-      const meta = await metaRes.json();
+      const countBN = await market.itemCount();
+      console.log("🔍 got itemCount =", countBN.toString());
+      const count = countBN.toNumber();
 
-      const totalBN = await market.getTotalPrice(item.itemId);
-      const totalPrice = ethers.utils.formatEther(totalBN);
+      const loaded = [];
+      for (let i = 1; i <= count; i++) {
+        const it = await market.items(i);
 
-      loaded.push({
-        itemId: item.itemId.toNumber(),
-        tokenId: item.tokenId.toNumber(),
-        price: ethers.utils.formatEther(item.price),
-        totalPrice,
-        seller: item.seller,
-        sold: item.sold,
-        image: meta.image, 
-        name: meta.name,
-      });
+        // по желание: прескачаме вече продадени
+        if (it.sold) continue;
+
+        const totalBN = await market.getTotalPrice(it.itemId);
+        const totalPrice = ethers.utils.formatEther(totalBN);
+
+        const tokenURI = await nft.tokenURI(it.tokenId);
+        console.log("🔍 fetching metadata from", tokenURI);
+
+        const res = await fetch(tokenURI);
+        console.log(
+          "🔍 metadata response:",
+          res.status,
+          res.headers.get("content-type")
+        );
+
+        const meta = await res.json();
+
+        loaded.push({
+          itemId: it.itemId.toNumber(),
+          tokenId: it.tokenId.toNumber(),
+          price: ethers.utils.formatEther(it.price),
+          totalPrice,
+          seller: it.seller,
+          sold: it.sold,
+          image: meta.image,
+          name: meta.name,
+        });
+      }
+
+      setItems(loaded);
+    } catch (err) {
+      console.error("🔴 Failed to load items:", err);
     }
-    setItems(loaded);
-  } catch (err) {
-    console.error("Failed to load items:", err);
   }
-}
-
 
   return (
     <Router>
       <Navbar address={address} provider={provider} />
 
       <nav className="bg-white shadow p-4 mb-6 flex space-x-4">
-        <Link to="/" className="text-blue-600 hover:underline">All NFTs</Link>
-        <Link to="/upload" className="text-blue-600 hover:underline">Upload NFT</Link>
+        <Link to="/" className="text-blue-600 hover:underline">
+          All NFTs
+        </Link>
+        <Link to="/upload" className="text-blue-600 hover:underline">
+          Upload NFT
+        </Link>
       </nav>
 
       <div className="max-w-3xl mx-auto p-6 bg-gray-100 dark:bg-gray-200 rounded-xl shadow-lg space-y-6">
@@ -148,7 +146,10 @@ async function reloadItems() {
         {/* Modal for viewing & buying */}
         <NFTModal
           isOpen={modalOpen}
-          onClose={() => setModalOpen(false)}
+          onClose={() => {
+            setModalOpen(false);
+            setActiveItem(null);
+          }}
           item={activeItem}
           onBuy={async (id) => {
             setStatus('Purchasing…');

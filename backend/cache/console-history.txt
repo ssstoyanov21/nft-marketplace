@@ -1,3 +1,62 @@
+console.log("🔢 itemCount =", count.toString());
+const count = await Market.itemCount();
+const Market = await ethers.getContractAt("Marketplace", "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0");
+);
+ "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"
+"Marketplace",
+const Market = await ethers.getContractAt(
+}
+  });
+    sold:         it.sold
+    paymentToken: it.paymentToken,
+    seller:       it.seller,
+    price:        ethers.utils.formatEther(it.price) + " ETH",
+    itemId:          tokenId:      it.tokenId.toString(),
+  console.log("Item #1:", {
+  const it = await Market.items(1);
+console.log
+const count = await Market.itemCount();
+);
+  "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"
+  "Marketplace",
+const Market = await ethers.getContractAt(
+console.log
+const count = await Market.itemCount();
+console.log("Code length:", code.length)console.log("Deployed?", code.length > 2);
+const code = await ethers.provider.getCode(Market.address);
+);
+  "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"
+  "Marketplace",
+const Market = await ethers.getContractAt(
+);
+  "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"
+  "Marketplace",
+const Market = await ethers.getContractAt(
+const count = await Market.itemCount();
+console.log("Code length:", code.length)console.log("Deployed?", code.length > 2);
+const code = await ethers.provider.getCode(Market.address);
+> console.log("itemCount =", count.toString());
+> const count = await Market.itemCount();
+> console.log("Code length:", code.len> console.log("Deployed?", code.length > 2);
+> const code = await ethers.provider.getCode(Market.address);
+  );
+    "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"
+    "Marketplace",
+> const Market = await ethers.getContractAt(
+const count = await Market.itemCount();
+console.log("Deployed?", code.length > 2);
+);const code = await ethers.provider.getCode(Market.console.log("Code length:", code.length);
+  "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"
+  "Marketplace",
+const Market = await ethers.getContractAt(
+(await Market.itemCount()).toString();
+„const Market = await ethers.getContractAt("Marketplace", "<MARKET_ADDRESS>");
+  const it = await Market.items  console.log("Item1:", it.toString());
+consoleif (count.gt(0)) {
+const count = await Market.itemCount();
+const Market = await ethers.getContractAt("Marketplace","0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0");
+const code = await ethers.provider.getCode("0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0");
+console.log("✅ Market deployed?", code.length>2);
 console.log("itemCount() =", countBN.toString());
 const countBN = await market.itemCount();
 const market = Market.attach("0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0");
@@ -20,6 +79,4 @@ const provider = ethers.provider;
 const code = awaconsole.log("Code at market address:", code.length > 2 ? "✅ deployed" : "❌ no code");
 const provider = ethers.provider;
 cd ..
-console.log("Code at market address:", code.length > 2 ? "✅ deployed" : "❌ no code");
-const code = await provider.getCode("0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512");
-const provider = ethers.provider;
+console.lo
