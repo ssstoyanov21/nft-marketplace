@@ -1,36 +1,28 @@
 import React from 'react';
 
-export default function DemoNfts({ signer, items, filter, setFilter, openModal }) {
-  const userAddress = signer?._address?.toLowerCase();
-  
+export default function DemoNfts({ items, openModal }) {
   return (
-    <>
-      <div className="tabs">
-        {["All", "My NFTs", "Available", "Sold"].map(tab => (
-          <button
-            key={tab}
-            onClick={() => setFilter(tab)}
-            className={filter === tab ? 'active' : ''}
+    <div>
+      <h2 className="text-2xl font-bold mb-4">All NFTs</h2>
+      <div className="nft-grid">
+        {items.map(item => (
+          <div
+            key={item.itemId}
+            className="nft-card"
+            onClick={() => openModal(item)}
           >
-            {tab}
-          </button>
-        ))}
-      </div>
-
-      <div className="grid">
-        {items.filter(item => {
-          if (filter === "All") return true;
-          if (filter === "My NFTs") return item.seller.toLowerCase() === userAddress;
-          if (filter === "Available") return !item.sold;
-          if (filter === "Sold") return item.sold;
-        }).map(item => (
-          <div key={item.itemId} className="nft-card">
-            <img src={item.image} alt={`NFT #${item.tokenId}`} />
-            <p>NFT #{item.tokenId}</p>
-            <button onClick={() => openModal(item)}>Details</button>
+            <img
+              className="nft-image"
+              src={item.image}
+              alt={item.name}
+            />
+            <div className="p-4">
+              <h3 className="font-medium">{item.name}</h3>
+              <p className="text-sm text-gray-600">{item.price} ETH</p>
+            </div>
           </div>
         ))}
       </div>
-    </>
+    </div>
   );
 }

@@ -5,12 +5,15 @@
 .nft-grid {
   @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6;
 }
+
 .nft-card {
-  @apply bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow;
+  @apply bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow cursor-pointer;
 }
+
 .nft-image {
   @apply w-full h-48 object-cover;
 }
+
 .detail-image {
   @apply w-full max-w-md rounded-xl shadow-2xl;
 }

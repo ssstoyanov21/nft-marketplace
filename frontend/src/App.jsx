@@ -1,4 +1,3 @@
-// src/App.jsx
 import { useState, useEffect } from 'react';
 import './index.css';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';

@@ -2,9 +2,7 @@
   "name": "nft-backend",
   "version": "1.0.0",
   "scripts": {
-    "node": "hardhat node",
-    "deploy:hardhat": "hardhat run scripts/deploy-nft.js --network hardhat",
-    "check-fork": "hardhat run scripts/check-fork.js --network hardhat"
+    "setup": "hardhat run scripts/deploy-local.js --network localhost && hardhat run scripts/deploy-nft.js --network localhost && hardhat run scripts/mint-and-list.js --network localhost"
   },
   "devDependencies": {
     "@chainlink/contracts": "^0.4.2",
