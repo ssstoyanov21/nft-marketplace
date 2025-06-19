@@ -1,4 +1,5 @@
-const hre = require("hardhat");
+require('dotenv').config()
+const hre = require('hardhat')
 
 async function main() {
   const [deployer] = await hre.ethers.getSigners();
