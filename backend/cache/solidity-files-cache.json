@@ -641,8 +641,8 @@
       ]
     },
     "C:\\Users\\User\\Documents\\nft-fullstack\\backend\\contracts\\NFT.sol": {
-      "lastModificationDate": 1749136779266,
-      "contentHash": "aaa616b011d489e068def7602b8cada4",
+      "lastModificationDate": 1750009351829,
+      "contentHash": "62113e8426d35bcfb8755008305f80e7",
       "sourceName": "contracts/NFT.sol",
       "solcConfig": {
         "version": "0.8.24",

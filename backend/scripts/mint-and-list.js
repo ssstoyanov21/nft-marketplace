@@ -22,10 +22,13 @@ async function main() {
 
   // Mint & List
   for (let i = 1; i <= 5; i++) {
-    const tokenUri = `http://localhost:5173/metadata/${i}.json`;
+    // const tokenUri = `http://localhost:5173/metadata/${i}.json`;
+    const tokenUri = `ipfs://QmNyXvdU4UgeuCrNWM6vVzk49VtsquDL774RRVoSeKq63w/${i}.json`;
 
     // Mint
-    await (await nft.connect(deployer).mint(tokenUri)).wait();
+    const tx = await nft.connect(deployer).mint(tokenUri);
+    const receipt = await tx.wait();
+    console.log("✅ Transaction mined:", receipt.transactionHash);
     console.log(`✅ Minted token ${i}`);
 
     // List за 0.5 ETH срещу paymentToken = NFT_ADDRESS

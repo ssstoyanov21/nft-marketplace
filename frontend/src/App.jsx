@@ -60,7 +60,11 @@ export default function App() {
         const tokenURI = await nft.tokenURI(it.tokenId);
         console.log("🔍 fetching metadata from", tokenURI);
 
-        const res = await fetch(tokenURI);
+        const localTokenURI = tokenURI.startsWith('ipfs://')
+          ? tokenURI.replace('ipfs://', 'http://localhost:8080/ipfs/')
+          : tokenURI;
+
+        const res = await fetch(localTokenURI);
         console.log(
           "🔍 metadata response:",
           res.status,
